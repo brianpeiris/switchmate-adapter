@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 from os import path
 
@@ -12,10 +11,13 @@ from bluepy.btle import (
 # firmware == 2.99.15 (or higher?)
 SWITCHMATE_SERVICE = 'abd0f555eb40e7b2ac49ddeb83d32ba2'
 
+ORIGINAL_STATE_HANDLE = 0x2e
+BRIGHT_STATE_HANDLE = 0x30
+
+ORIGINAL_MODEL_STRING_HANDLE = 0x14
 
 SERVICES_AD_TYPE = 0x07
 MANUFACTURER_DATA_AD_TYPE = 0xff
-
 
 def get_switchmates(scan_entries, mac_address):
     switchmates = []
@@ -36,8 +38,22 @@ def scan(timeout=None, mac_address=None):
     scanner = Scanner()
     return get_switchmates(scanner.scan(timeout), mac_address)
 
+def is_original_device(device):
+    # The handle for reading the model string on Bright devices is actually
+    # different from Original devices, but using getCharacteristics to read
+    # the model is much slower.
+    model = device.readCharacteristic(ORIGINAL_MODEL_STRING_HANDLE)
+    return model == b'Original'
+
+def get_state_handle(device):
+    if is_original_device(device):
+        return ORIGINAL_STATE_HANDLE
+    else:
+        return BRIGHT_STATE_HANDLE
+
 def switch(mac_address, val):
     device = Peripheral(mac_address, ADDR_TYPE_RANDOM)
+    state_handle = get_state_handle(device)
     new_val = b'\x01' if val == True else b'\x00'
     device.writeCharacteristic(state_handle, new_val, True)
     device.disconnect()
@@ -49,12 +65,12 @@ def get_battery_level(mac_address):
     return battery_level
 
 def get_scan_entry_status(scan_entry):
-    return bool(int(scan_entry.getValueText(switchmate.MANUFACTURER_DATA_AD_TYPE)[1]))
+    return bool(int(scan_entry.getValueText(MANUFACTURER_DATA_AD_TYPE)[1]))
 
 def get_status(mac_address, timeout=None):
     entries = scan(timeout, mac_address)
 
     if len(entries):
-        return get_scan_entry_status(entries)
+        return get_scan_entry_status(entries[0])
 
     return None
