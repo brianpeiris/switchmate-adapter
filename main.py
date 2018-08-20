@@ -56,6 +56,8 @@ class SwitchmateAdapter(Adapter):
                     if device is None:
                         continue
                     val = switchmate.get_scan_entry_status(switch)
+                    if val is None:
+                        continue
                     prop = device.properties['on']
                     if prop.value != val:
                         prop.set_cached_value(val)

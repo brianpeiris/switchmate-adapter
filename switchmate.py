@@ -26,8 +26,11 @@ def get_switchmates(scan_entries, mac_address):
         is_switchmate = service_uuid == SWITCHMATE_SERVICE
         if not is_switchmate:
             continue
-        if mac_address and scan_entry.addr == mac_address:
-            return [scan_entry]
+        if mac_address:
+            if scan_entry.addr == mac_address:
+                return [scan_entry]
+            else:
+                continue
         if scan_entry not in switchmates:
             switchmates.append(scan_entry)
     switchmates.sort(key=lambda sw: sw.addr)
