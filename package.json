@@ -1,0 +1,18 @@
+{
+	"name": "switchmate-adapter",
+	"version": "0.0.1",
+	"private": true,
+	"main": "main.py",
+	"files": [
+		"lib",
+		"main.py"
+	],
+	"moziot": {
+		"api": {
+			"min": 1,
+			"max": 2
+		},
+		"plugin": true,
+		"exec": "python3 {path}/main.py"
+	}
+}
