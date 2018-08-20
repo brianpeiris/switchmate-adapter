@@ -63,7 +63,7 @@ class SwitchmateAdapter(Adapter):
                         prop.set_cached_value(val)
                         device.notify_property_changed(prop)
             except Exception as ex:
-                print('polling failed', ex, flush=True)
+                print('Polling failed', ex, flush=True)
 
 _ADAPTER = None
 
@@ -75,7 +75,7 @@ def cleanup():
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
-    _ADAPTER = SwitchmateAdapter(verbose=True)
+    _ADAPTER = SwitchmateAdapter(verbose=False)
 
     while _ADAPTER.proxy_running():
         time.sleep(2)

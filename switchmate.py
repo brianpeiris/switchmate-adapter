@@ -68,7 +68,15 @@ def get_battery_level(mac_address):
     return battery_level
 
 def get_scan_entry_status(scan_entry):
-    return bool(int(scan_entry.getValueText(MANUFACTURER_DATA_AD_TYPE)[1]))
+    ad_data = scan_entry.getValueText(MANUFACTURER_DATA_AD_TYPE)
+    second_byte = ad_data[1]
+    if second_byte == '0':
+        return False
+    elif second_byte == '1':
+        return True
+    else:
+        # ad_data sometimes contains unknown info. we just ignore those occurences.
+        return None
 
 def get_status(mac_address, timeout=None):
     entries = scan(timeout, mac_address)
