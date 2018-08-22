@@ -14,12 +14,7 @@ mkdir lib
 mkdir package
 
 # Pull down Python dependencies
-pip3 install -r requirements.txt --system -t lib --prefix ""
-
-# Build bluepy helper
-pushd lib/bluepy
-make
-popd
+pip3 install --no-binary :all: -t lib --system --prefix "" bluepy==1.0.5
 
 # Put package together
 cp -r lib LICENSE package.json *.py package/

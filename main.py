@@ -1,10 +1,13 @@
 import signal
+import subprocess
 import sys
+import threading
 import time
+
 import switchmate
 
+from os import path
 from gateway_addon import (Adapter, Device, Property)
-import threading
 
 class SwitchmateProperty(Property):
     def __init__(self, device, name, description, value):
@@ -46,28 +49,31 @@ class SwitchmateAdapter(Adapter):
         thread.daemon = True
         thread.start()
 
+    def update_device_props(self):
+        switchmates = switchmate.scan(timeout=_TIMEOUT)
+        for switch in switchmates:
+            device = self.get_device(switch.addr)
+            if device is None:
+                continue
+            val = switchmate.get_scan_entry_status(switch)
+            if val is None:
+                continue
+            prop = device.properties['on']
+            if prop.value != val:
+                prop.set_cached_value(val)
+                device.notify_property_changed(prop)
+
     def poll(self):
         while (True):
             time.sleep(_POLL_INTERVAL)
             try:
-                switchmates = switchmate.scan(timeout=_TIMEOUT)
-                for switch in switchmates:
-                    device = self.get_device(switch.addr)
-                    if device is None:
-                        continue
-                    val = switchmate.get_scan_entry_status(switch)
-                    if val is None:
-                        continue
-                    prop = device.properties['on']
-                    if prop.value != val:
-                        prop.set_cached_value(val)
-                        device.notify_property_changed(prop)
+                self.update_device_props()
             except Exception as ex:
                 print('Polling failed', ex, flush=True)
 
 _ADAPTER = None
 
-def cleanup():
+def cleanup(signal, frame):
     if _ADAPTER is not None:
         _ADAPTER.close_proxy()
     sys.exit(0)
@@ -75,6 +81,11 @@ def cleanup():
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
+
+    helper_path = path.join(path.dirname(path.abspath(__file__)), 'lib/bluepy/bluepy-helper')
+    subprocess.run('sudo setcap cap_net_raw,cap_net_admin+eip {}'.format(helper_path).split(' '))
+
+
     _ADAPTER = SwitchmateAdapter(verbose=False)
 
     while _ADAPTER.proxy_running():

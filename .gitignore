@@ -2,3 +2,4 @@ __pycache__
 package
 lib
 *.tgz
+SHA256SUMS
