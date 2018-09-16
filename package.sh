@@ -14,7 +14,7 @@ mkdir lib
 mkdir package
 
 # Pull down Python dependencies
-pip3 install --no-binary :all: -t lib --system --prefix "" bluepy==1.0.5
+pip3 install --no-binary :all: -t lib --system --prefix "" bluepy==1.2.0
 
 # Put package together
 cp -r lib LICENSE package.json *.py package/

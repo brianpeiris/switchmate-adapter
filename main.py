@@ -85,7 +85,6 @@ if __name__ == '__main__':
     helper_path = path.join(path.dirname(path.abspath(__file__)), 'lib/bluepy/bluepy-helper')
     subprocess.run('sudo setcap cap_net_raw,cap_net_admin+eip {}'.format(helper_path).split(' '))
 
-
     _ADAPTER = SwitchmateAdapter(verbose=False)
 
     while _ADAPTER.proxy_running():

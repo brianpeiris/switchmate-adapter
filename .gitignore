@@ -3,3 +3,4 @@ package
 lib
 *.tgz
 SHA256SUMS
+.env
