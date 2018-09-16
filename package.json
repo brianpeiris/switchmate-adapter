@@ -8,6 +8,8 @@
 	"private": true,
 	"main": "main.py",
 	"files": [
+		"LICENSE",
+		"SHA256SUMS",
 		"lib",
 		"main.py"
 	],
