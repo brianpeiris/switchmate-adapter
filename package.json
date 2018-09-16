@@ -1,5 +1,9 @@
 {
 	"name": "switchmate-adapter",
+	"display_name": "Switchmate",
+	"description": "Switchmate adapter plugin for Mozilla IoT Gateway",
+	"author": "Brian Peiris",
+	"homepage": "https://github.com/brianpeiris/switchmate-adapter",
 	"version": "0.0.1",
 	"private": true,
 	"main": "main.py",
